@@ -21,7 +21,7 @@ export const postContact = async (contactdata) => {
 }
 
 export const signIn = async (signindata) => {
-  const data = await axios.post(("http://localhost:3000/api/signin"), {
+  const data = await axios.post(("https://flaw-less-bricks.vercel.app/api/login"), {
     ...signindata
   });
   console.log(data.data)
@@ -30,7 +30,7 @@ export const signIn = async (signindata) => {
 
 
 export const signUp = async (signupdata) => {
-  const data = await axios.post(("http://localhost:3000/api/login"), {
+  const data = await axios.post(("http://flaw-less-bricks.vercel.app/api/signup"), {
     ...signupdata
   });
   console.log(data.data)
