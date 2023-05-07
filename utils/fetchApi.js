@@ -30,7 +30,7 @@ export const signIn = async (signindata) => {
 
 
 export const signUp = async (signupdata) => {
-  const data = await axios.post(("http://flaw-less-bricks.vercel.app/api/signup"), {
+  const data = await axios.post(("https://flaw-less-bricks.vercel.app/api/signup"), {
     ...signupdata
   });
   console.log(data.data)
