@@ -4,8 +4,16 @@ import { Box } from '@chakra-ui/react';
 
 import Footer from './Footer';
 import Navbar from './Navbar';
+import { useRouter } from 'next/router';
 
 export default function Layout({ children }) {
+
+  const router = useRouter();
+
+  // Check if the current page is the index page
+  const isIndexPage = router.pathname === '/';
+
+
   return (
     <>
       <Head>
@@ -13,7 +21,7 @@ export default function Layout({ children }) {
       </Head>
       <Box maxWidth='1280px' m='auto'>
         <header>
-          <Navbar />
+          {isIndexPage ? null : <Navbar />} {/* Hide navbar on index page */}
         </header>
         <main>{children}</main>
         <footer>

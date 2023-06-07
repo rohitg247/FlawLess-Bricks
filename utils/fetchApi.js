@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const baseUrl = 'https://bayut.p.rapidapi.com';
+export const apiUrl = "http://localhost:3000/api"
 
 export const fetchApi = async (url) => {
   const { data } = await axios.get((url), {
@@ -14,14 +15,21 @@ export const fetchApi = async (url) => {
 }
 
 export const postContact = async (contactdata) => {
-  const data = await axios.post(("http://localhost:3000/api/post-contact"), {
+  const data = await axios.post((`${apiUrl}/post-contact`), {
     ...contactdata
   });
   return data?.data?.contact;
 }
 
+// export const postContact = async (contactdata) => {
+//   const data = await axios.post((`${apiUrl}/post-contact`), {
+//     ...contactdata
+//   });
+//   return data?.data?.contact;
+// }
+
 export const signIn = async (signindata) => {
-  const data = await axios.post(("https://flaw-less-bricks.vercel.app/api/login"), {
+  const data = await axios.post((`${apiUrl}/login`), {
     ...signindata
   });
   console.log(data.data)
@@ -30,7 +38,7 @@ export const signIn = async (signindata) => {
 
 
 export const signUp = async (signupdata) => {
-  const data = await axios.post(("https://flaw-less-bricks.vercel.app/api/signup"), {
+  const data = await axios.post((`${apiUrl}/auth/signup`), {
     ...signupdata
   });
   console.log(data.data)

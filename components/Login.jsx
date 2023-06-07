@@ -18,8 +18,10 @@ import {
 import { useState } from 'react';
 import { BsFacebook, BsGoogle, BsInstagram } from 'react-icons/bs';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-import { signIn } from '../utils/fetchApi';
+import { getSession, signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/dist/client/router';
+import { route } from 'next/dist/server/router';
+import { toast } from 'react-toastify';
 
 
 
@@ -27,7 +29,13 @@ export default function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
 
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [submitError, setSubmitError] = useState("")
+
     const router = useRouter();
+    const { data: newsession } = useSession()
 
     const [data, setData] = useState({ email: "", password: "" })
     const handleChange = (e) => {
@@ -37,15 +45,51 @@ export default function Login() {
 
     }
 
-    const handleSumbit = async () => {
+    const callbackUrl = (router.query?.callbackUrl) ?? "/home";
+
+    const handleSumbit = async (event) => {
+
+        event.preventDefault()
+
+
+        // try {
+        //     setLoading(true)
+
+        //     const loginRes = await loginUser({ email, password })
+
+        //     if (loginRes && !loginRes.ok) {
+        //         setSubmitError(loginRes.error || "")
+        //     }
+        //     else {
+        //         router.push(callbackUrl)
+        //     }
+        // } catch (error) {
+        //     if (error.response) {
+        //         const errorMsg = error.response.data?.error;
+        //         setSubmitError(errorMsg);
+        //     }
+        // }
+
+        // setLoading(false)
         const signindata = await signIn(
-            {
-                "email": data.email,
-                "password": data.password,
-            }
+            "credentials", {
+            email: data.email,
+            password: data.password,
+            callbackUrl: callbackUrl ?? "/",
+            redirect: false,
+        }
         )
-            .then(() => router.push("/")).catch(err => alert(err))
         console.log(signindata)
+        if (signindata.error) {
+            toast.error("Something went wrong")
+
+        }
+        else {
+            toast.success("You're Logged In")
+            router.push("/home")
+
+        }
+        // .then(() => router.push(callbackUrl), alert("Success")).catch(err => alert(err))
     }
     return (
         <Flex
@@ -153,6 +197,7 @@ export default function Login() {
                             </Stack>
                             <Button
                                 onClick={handleSumbit}
+                                disabled={loading}
                                 bg={'blue.400'}
                                 color={'white'}
                                 _hover={{
@@ -160,6 +205,17 @@ export default function Login() {
                                 }}>
                                 Sign in
                             </Button>
+                            {
+                                submitError &&
+                                <div style={{
+                                    fontSize: "0.8rem",
+                                    color: "#fa4343",
+                                    margin: "0.5rem 0",
+                                }}>
+                                    {submitError}
+                                </div>
+
+                            }
                         </Stack>
                         <Stack pt={6}>
                             <Text align={'center'}>

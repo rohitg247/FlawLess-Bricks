@@ -6,6 +6,8 @@ const contactDataSchema = new Schema({
   name: {
     type: String,
     required: true,
+    // maxlength: 10,
+    // minlength: 3,
   },
   email: {
     type: String,

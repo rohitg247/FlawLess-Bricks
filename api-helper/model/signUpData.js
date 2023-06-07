@@ -23,4 +23,8 @@ const signUpSchema = new Schema({
     required: true,
   },
 });
-export default mongoose.models.SignUp || mongoose.model("SignUp", signUpSchema);
+
+// const SignUp = mongoose.model("SignUp", signUpSchema);
+// export default SignUp;
+
+export default mongoose?.models?.SignUp || mongoose.model("SignUp", signUpSchema);

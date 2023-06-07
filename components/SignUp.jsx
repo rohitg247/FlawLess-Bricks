@@ -18,10 +18,20 @@ import {
 import { useState } from 'react';
 import { BsFacebook, BsGoogle, BsInstagram } from 'react-icons/bs';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-import { signUp } from '../utils/fetchApi';
+import { apiUrl, signUp } from '../utils/fetchApi';
+import axios, { AxiosError } from 'axios';
+import { useRouter } from 'next/router';
+import { getErrorMsg, loginUser } from 'api-helper/model/controller/login-controller';
+// import SignUp from 'api-helper/model/signUpData';
 
 export default function SignUpCard() {
     const [showPassword, setShowPassword] = useState(false);
+
+    const [validationErrors, setValidationErrors] = useState([]);
+    const [submitError, setSubmitError] = useState("")
+    const [loading, setLoading] = useState(false)
+    const router = useRouter()
+
 
     const [data, setData] = useState({ firstname: "", lastname: "", email: "", password: "", access: "user" })
     const handleChange = (e) => {
@@ -31,7 +41,87 @@ export default function SignUpCard() {
 
     }
 
+    const validateData = () => {
+        const err = []
+
+        if (data.firstname?.length < 2) {
+            err.push({ firstname: "First name must be atleast 2 characters long" })
+        }
+        else if (data.firstname?.length > 10) {
+            err.push({ firstname: "Full name should be less than 10 characters" })
+        }
+        if (data.lastname?.length < 2) {
+            err.push({ lastname: "Last name must be atleast 2 characters long" })
+        }
+        else if (data.firstname?.length > 10) {
+            err.push({ lastname: "Last name should be less than 10 characters" })
+        }
+        else if (data.password?.length < 6) {
+            err.push({ password: "Password should be atleast 6 characters long" })
+        }
+        // else if (data.password !== data.confirmPassword) {
+        //     err.push({ confirmPassword: "Passwords don't match" })
+        // }
+
+        setValidationErrors(err)
+
+        if (err.length > 0) {
+            return false
+        }
+        else {
+            return true
+        }
+    }
+
+
+    const callbackUrl = (router.query?.callbackUrl) ?? "/home";
+
+
     const handleSumbit = async () => {
+
+        const isVaild = validateData()
+
+        if (isVaild) {
+            //sign up
+
+            try {
+                setLoading(true)
+                const apiRes = await axios.post((`${apiUrl}/auth/signup`), data)
+
+                if (apiRes?.data?.success) {
+                    // save data in session using next auth
+
+                    const LoginRes = await loginUser({
+                        email: data.email,
+                        password: data.password,
+                        first: data.firstname
+                        // redirect: false
+                    })
+
+                    if (LoginRes && !LoginRes.ok) {
+                        setSubmitError(LoginRes.error || "")
+                    }
+                    else {
+                        router.push(callbackUrl)
+                    }
+                }
+            } catch (error) {
+                if (typeof error === 'object' && error !== null && error.response) {
+                    const errorMsg = error.response?.data?.error;
+                    if (errorMsg) {
+                        setSubmitError(errorMsg);
+                    }
+                } else {
+                    setSubmitError("An error occurred while submitting the form.");
+                }
+
+            }
+
+
+
+            setLoading(false)
+        }
+
         const signupdata = await signUp(
             {
                 "firstname": data.firstname,
@@ -43,6 +133,7 @@ export default function SignUpCard() {
         )
             .then(() => alert("Success")).catch(err => alert(err))
         console.log(signupdata)
+        router.push(callbackUrl);
     }
 
     return (
@@ -125,13 +216,15 @@ export default function SignUpCard() {
                             <Box>
                                 <FormControl id="firstName" isRequired>
                                     <FormLabel>First Name</FormLabel>
-                                    <Input type="text" name="firstname" onChange={handleChange} placeholder="First Name" />
+                                    <Input type="text" name="firstname" onChange={handleChange} placeholder="First Name"
+                                        error={getErrorMsg("firstname", validationErrors)} />
                                 </FormControl>
                             </Box>
                             <Box>
                                 <FormControl id="lastName">
                                     <FormLabel>Last Name</FormLabel>
-                                    <Input type="text" name="lastname" onChange={handleChange} placeholder="Last Name" />
+                                    <Input type="text" name="lastname" onChange={handleChange} placeholder="Last Name"
+                                        error={getErrorMsg("lastname", validationErrors)} />
                                 </FormControl>
                             </Box>
                         </HStack>
@@ -142,7 +235,8 @@ export default function SignUpCard() {
                         <FormControl id="password" isRequired>
                             <FormLabel>Password</FormLabel>
                             <InputGroup>
-                                <Input type={showPassword ? 'text' : 'password'} name="password" onChange={handleChange} placeholder="Create Password" />
+                                <Input type={showPassword ? 'text' : 'password'} name="password" onChange={handleChange} placeholder="Create Password"
+                                    error={getErrorMsg("password", validationErrors)} />
                                 <InputRightElement h={'full'}>
                                     <Button padding={0}
                                         variant={'ghost'}
@@ -156,6 +250,7 @@ export default function SignUpCard() {
                         </FormControl>
                         <Stack spacing={10} pt={2}>
                             <Button onClick={handleSumbit}
+                                disabled={loading}
                                 loadingText="Submitting"
                                 size="lg"
                                 bg={'blue.400'}
@@ -163,8 +258,23 @@ export default function SignUpCard() {
                                 _hover={{
                                     bg: 'blue.500',
                                 }}>
+                                {/* <Link href={`/login?callbackUrl=${"/"}`}>
+                                    <a> */}
                                 Sign up
+                                {/* </a>
+                                </Link> */}
                             </Button>
+                            {
+                                submitError &&
+                                <div style={{
+                                    fontSize: "0.8rem",
+                                    color: "#fa4343",
+                                    margin: "0.5rem 0",
+                                }}>
+                                    {submitError}
+                                </div>
+
+                            }
                         </Stack>
                         <Stack pt={6}>
                             <Text align={'center'}>
@@ -177,3 +287,19 @@ export default function SignUpCard() {
         </Flex>
     );
 }
+
+
+// export const ErrorText = styled.p`
+
+// `
+
+               // if (error instanceof AxiosError) {
+                //     const errorMsg = error.response?.data?.error;
+                //     if (errorMsg) {
+                //         setSubmitError(errorMsg);
+                //     } else {
+                //         setSubmitError("An error occurred while submitting the form.");
+                //     }
+                // } else {
+                //     setSubmitError("An unexpected error occurred.");
+                // }

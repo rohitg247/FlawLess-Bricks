@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import React, { useState } from 'react'
-
+import logo from '../assets/images/logo.png'
+import Image from 'next/image';
 import Link from 'next/link';
 import Nextlink from 'next/link';
 import {
@@ -18,8 +19,13 @@ import { FcMenu, FcHome, FcAbout, FcContacts } from 'react-icons/fc';
 import { BsSearch, BsMoonStarsFill, BsSun } from 'react-icons/bs';
 import { FiKey } from 'react-icons/fi';
 import { TbLogout } from 'react-icons/tb';
+import { BiLogIn } from 'react-icons/bi';
 import { FaTimes, FaBars } from 'react-icons/fa';
 import ContactForm from "./ContactForm";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { signOut } from "next-auth/react";
+import { getSession } from 'next-auth/react';
 
 // const Links = ['Dashboard', 'Projects', 'Team'];
 const Links = [
@@ -54,11 +60,39 @@ const NavLink = ({ children, route }) => (
   </Link>
 );
 
+const Logout = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+  // console.log(session)
+
+  const handleSignOut = async () => {
+    await signOut();
+    // const handlecoockie = async () => {
+    //   document.cookie = 'next-auth.session-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    //   document.cookie = 'next-auth.csrf-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // }
+    // await handlecoockie();
+    if (!session) {
+      router.push('/');
+    }
+    // console.log("session", session)
+  };
+
+  return (
+    <MenuItem icon={<TbLogout />} onClick={handleSignOut}>
+      Logout
+    </MenuItem>
+  );
+};
+
 const Navbar = () => {
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const [modal, setModal] = useState(false)
+  const { data: session } = useSession();
+
+  const navigation = useRouter()
 
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -70,6 +104,14 @@ const Navbar = () => {
     setModal(false)
   }
   const handleClick = () => setClick(!click);
+
+  useEffect(() => {
+    if (!session) {
+      navigation.push("/")
+    }
+  }, [session])
+
+
 
 
   return (
@@ -85,7 +127,8 @@ const Navbar = () => {
           />
           <HStack spacing={8} alignItems={'center'}>
             <Box fontSize='3xl' color='blue.400' fontWeight='bold'>
-              <Link href='/' paddingLeft='2'>Flawless Bricks</Link>
+              <Link href='/home' paddingLeft='2'>FlawLess Bricks</Link>
+              {/* <Image src={logo} /> */}
             </Box>
             <HStack
               as={'nav'}
@@ -94,7 +137,7 @@ const Navbar = () => {
               {Links.map((link) => (
                 <NavLink key={link.name} route={link.route}>
                   <a>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', cursor: "pointer", alignItems: 'center' }}>
                       <link.icon style={{ marginRight: '8px' }} /> {link.name}
                     </div>
                   </a>
@@ -142,9 +185,11 @@ const Navbar = () => {
                 </Center>
                 <br />
                 <MenuDivider />
+                {/* <MenuItem onClick={() => navigation.push("/login")} icon={<BiLogIn />}>Login</MenuItem> */}
                 <MenuItem icon={<AiFillHeart />}>Your Wishlist</MenuItem>
                 <MenuItem icon={<AiOutlineSetting />}>Account Settings</MenuItem>
-                <MenuItem icon={<TbLogout />}>Logout</MenuItem>
+                <Logout />
+                {/* <MenuItem icon={<TbLogout />} onClick={signOut}  >Logout</MenuItem> */}
               </MenuList>
             </Menu>
           </Flex>
@@ -157,6 +202,7 @@ const Navbar = () => {
                 <NavLink key={link.name} route={link.route}><Center style={{
                   cursor: "pointer",
                   display: "flex",
+                  alignItems: 'center'
                 }}>
                   <a>
                     <div>
