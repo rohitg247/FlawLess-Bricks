@@ -6,7 +6,7 @@ export const apiUrl = "http://localhost:3000/api"
 export const fetchApi = async (url) => {
   const { data } = await axios.get((url), {
     headers: {
-      'X-RapidAPI-Key': 'e70115af47mshc1d394be6b39b3ap1c6294jsn9284e88ab69f',
+      'X-RapidAPI-Key': '221f487d67msh120f1f160d7068bp1a2895jsn715b5878b865',
       'X-RapidAPI-Host': 'bayut.p.rapidapi.com'
     },
   });

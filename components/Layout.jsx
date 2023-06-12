@@ -13,6 +13,9 @@ export default function Layout({ children }) {
   // Check if the current page is the index page
   const isIndexPage = router.pathname === '/';
 
+  // // Check if the current page is the Signup page
+  const isSignUp = router.pathname === '/signup';
+
 
   return (
     <>
@@ -21,7 +24,8 @@ export default function Layout({ children }) {
       </Head>
       <Box maxWidth='1280px' m='auto'>
         <header>
-          {isIndexPage ? null : <Navbar />} {/* Hide navbar on index page */}
+          {isIndexPage ? null : <Navbar /> && isSignUp ? null : <Navbar />} {/* Hide navbar on index page */}
+          {/* {isSignUp ? null : <Navbar />} Hide navbar on Signup page */}
         </header>
         <main>{children}</main>
         <footer>

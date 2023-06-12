@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 async function middleware(req) {
     const pathname = req.nextUrl.pathname;
-    const protectedPaths = ["/", "/admin"];
+    const protectedPaths = ["/home", "/admin"];
     const isPathProtected = protectedPaths?.some((path) => pathname == path);
     const res = NextResponse.next();
 

@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import React, { useState } from 'react'
-import logo from '../assets/images/logo.png'
+import logonew from '../assets/images/logonew.png'
 import Image from 'next/image';
 import Link from 'next/link';
 import Nextlink from 'next/link';
@@ -20,6 +20,7 @@ import { BsSearch, BsMoonStarsFill, BsSun } from 'react-icons/bs';
 import { FiKey } from 'react-icons/fi';
 import { TbLogout } from 'react-icons/tb';
 import { BiLogIn } from 'react-icons/bi';
+import { MdDashboard } from 'react-icons/md'
 import { FaTimes, FaBars } from 'react-icons/fa';
 import ContactForm from "./ContactForm";
 import { useSession } from 'next-auth/react';
@@ -40,7 +41,7 @@ const Links = [
     icon: FcAbout
   },
   {
-    name: "Sell Property",
+    name: "Rent Property",
     route: "/search?purpose=for-rent",
     icon: FiKey
   }
@@ -105,11 +106,11 @@ const Navbar = () => {
   }
   const handleClick = () => setClick(!click);
 
-  useEffect(() => {
-    if (!session) {
-      navigation.push("/")
-    }
-  }, [session])
+  // useEffect(() => {
+  //   if (!session) {
+  //     navigation.push("/")
+  //   }
+  // }, [session])
 
 
 
@@ -127,8 +128,10 @@ const Navbar = () => {
           />
           <HStack spacing={8} alignItems={'center'}>
             <Box fontSize='3xl' color='blue.400' fontWeight='bold'>
-              <Link href='/home' paddingLeft='2'>FlawLess Bricks</Link>
-              {/* <Image src={logo} /> */}
+              <Link href='/home' paddingLeft='2'>
+                {/* FlawLess Bricks */}
+                <Image src={logonew} width="240px" height="180px" />
+              </Link>
             </Box>
             <HStack
               as={'nav'}
@@ -181,11 +184,12 @@ const Navbar = () => {
                 </Center>
                 <br />
                 <Center>
-                  <p>Username</p>
+                  <p>{session?.user?.email}</p>
                 </Center>
                 <br />
                 <MenuDivider />
                 {/* <MenuItem onClick={() => navigation.push("/login")} icon={<BiLogIn />}>Login</MenuItem> */}
+                {session?.user?.access === "admin" && (<MenuItem onClick={() => navigation.push("/admin")} icon={<MdDashboard />}>Dashboard</MenuItem>)}
                 <MenuItem icon={<AiFillHeart />}>Your Wishlist</MenuItem>
                 <MenuItem icon={<AiOutlineSetting />}>Account Settings</MenuItem>
                 <Logout />

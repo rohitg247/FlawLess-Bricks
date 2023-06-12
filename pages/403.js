@@ -1,7 +1,7 @@
 import React from 'react'
 import Custom403 from '../components/403'
 
-const Custom403 = () => {
+const ErrorPage = () => {
     return (
         <div>
             <Custom403 />
@@ -9,4 +9,4 @@ const Custom403 = () => {
     )
 }
 
-export default Custom403
+export default ErrorPage

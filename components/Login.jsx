@@ -15,7 +15,7 @@ import {
     InputGroup,
     InputRightElement,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BsFacebook, BsGoogle, BsInstagram } from 'react-icons/bs';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { getSession, signIn, useSession } from 'next-auth/react';
@@ -91,6 +91,28 @@ export default function Login() {
         }
         // .then(() => router.push(callbackUrl), alert("Success")).catch(err => alert(err))
     }
+
+    useEffect(() => {
+        const keyDownHandler = event => {
+            console.log('User pressed: ', event.key);
+
+            if (event.key === 'Enter') {
+                event?.preventDefault();
+
+                // 👇️ call submit function here
+                handleSumbit(event);
+            }
+        };
+
+        document.addEventListener('keydown', keyDownHandler);
+
+        return () => {
+            document.removeEventListener('keydown', keyDownHandler);
+        };
+    }, []);
+
+
+    console.log(newsession)
     return (
         <Flex
             minH={'100vh'}
@@ -114,7 +136,7 @@ export default function Login() {
                         spacing={16}
                         direction={{ base: 'row' }}>
 
-                        <Link href="#">
+                        <Link href="https://accounts.google.com/v3/signin/identifier?dsh=S-1811757469%3A1686557780393990&elo=1&ffgf=1&ifkv=Af_xneG98UMbUw-LreCVzI_qY2hI7GtCLJDJjEJjqUf0qh1oCO2LzMya0WHA5O7iD6S4MUnmO7lmyQ&flowName=GlifWebSignIn&flowEntry=ServiceLogin">
                             <IconButton
                                 aria-label="google"
                                 variant="ghost"
@@ -196,7 +218,7 @@ export default function Login() {
                                 <Link color={'blue.400'}>Forgot password?</Link>
                             </Stack>
                             <Button
-                                onClick={handleSumbit}
+                                onClick={(e) => handleSumbit(e)}
                                 disabled={loading}
                                 bg={'blue.400'}
                                 color={'white'}

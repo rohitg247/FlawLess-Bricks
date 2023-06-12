@@ -2,6 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Flex, Box, Text, Button } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import Property from '../components/Property';
 import { baseUrl, fetchApi } from '../utils/fetchApi';
@@ -22,14 +24,17 @@ export const Banner = ({ purpose, title1, title2, desc1, desc2, buttonText, link
 
 
 const Home = ({ propertiesForSale, propertiesForRent }) => {
-    const { data: session } = useSession()
-    if (!session) {
-        return (
-            <div>
-                Please Login First
-            </div>
-        )
-    }
+    const { data: session, status } = useSession()
+    const router = useRouter()
+    console.log(session)
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/")
+        }
+    }, [session, status])
+
+
     return (
         <Box>
             <Banner

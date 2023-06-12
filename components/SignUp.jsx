@@ -74,7 +74,7 @@ export default function SignUpCard() {
     }
 
 
-    const callbackUrl = (router.query?.callbackUrl) ?? "/home";
+    const callbackUrl = (router.query?.callbackUrl) ?? "/";
 
 
     const handleSumbit = async () => {
@@ -278,7 +278,7 @@ export default function SignUpCard() {
                         </Stack>
                         <Stack pt={6}>
                             <Text align={'center'}>
-                                Already a user? <Link href="/login" passHref color={'blue.400'}>Login</Link>
+                                Already a user? <Link href="/" passHref color={'blue.400'}>Login</Link>
                             </Text>
                         </Stack>
                     </Stack>
